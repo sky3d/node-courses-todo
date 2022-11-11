@@ -17,7 +17,7 @@ const {
   exportTodoTxt
 } = require('../model/todotxt')
 
-function _todoTxtStringify ({ doc }) {
+function _todoTxtStringify({ doc }) {
   if (!doc) {
     return ''
   }
@@ -25,7 +25,7 @@ function _todoTxtStringify ({ doc }) {
   return exportTodoTxt(doc)
 }
 
-function parseFilterValue (value) {
+function parseFilterValue(value) {
   if (value === 'true') {
     return true
   }
@@ -41,7 +41,7 @@ function parseFilterValue (value) {
  * @param {Object} requestBody - тело POST-запроса
  * @returns {import('../model/todo').TodoEntry} - запись списка дел
  */
-function parseTodo (requestBody) {
+function parseTodo(requestBody) {
   const todo = {
     /*
       TODO [Урок 4.2]: Заполните описание задачи списка дел:
@@ -64,7 +64,7 @@ router.use(apiAuth)
 
 // Получение списка задач. Фильтры задаются параметрами GET-запроса
 router.get('/', totalMiddleware, async (ctx, next) => {
-  const { contentType } = ctx.query
+  const { contentType, completed, foo } = ctx.query
   const filter = {
     /*
       TODO [Урок 4.1]: Заполните значение переменной filter.
@@ -80,6 +80,14 @@ router.get('/', totalMiddleware, async (ctx, next) => {
       TODO [Урок 5.3]: Добавьте фильтр по email-адреса пользователя при получении записей из БД
     */
   }
+
+  if (completed !== undefined) {
+    filter.completed = parseFilterValue(completed)
+  }
+  if (foo !== undefined) {
+    filter.foo = foo
+  }
+
   const cursor = getTodos(filter)
   switch (contentType) {
     case 'todotxt':
@@ -94,16 +102,18 @@ router.get('/', totalMiddleware, async (ctx, next) => {
 
 // Получение одной записи из списка дел по идентификатору
 router.get('/:id', async (ctx, next) => {
+  const params = ctx.request.params;
   const result = await getTodo({
-    /*
-      TODO [Урок 4.1]: Реализуйте фильтр записей списка дел по идентификатору.
-
-      Прочитайте значение параметра _id из URL-адреса.
-    */
-    /*
-      TODO [Урок 5.3]: Добавьте фильтр по email-адреса пользователя при получении записей из БД
-    */
+    _id: params.id,
   })
+  /*
+    TODO [Урок 4.1]: Реализуйте фильтр записей списка дел по идентификатору.
+
+    Прочитайте значение параметра _id из URL-адреса.
+  */
+  /*
+    TODO [Урок 5.3]: Добавьте фильтр по email-адреса пользователя при получении записей из БД
+  */
   if (!result) {
     throw new NotFoundError(`Todo with id ${ctx.params.id} is not found`)
   }
