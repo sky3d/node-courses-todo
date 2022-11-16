@@ -1,5 +1,5 @@
 const fs = require('fs').promises
-const ObjectID = require('mongodb').ObjectID
+const ObjectId = require('mongodb').ObjectId
 const dbConnection = require('./db')
 const { importTodoTxt } = require('./todotxt')
 const { InvalidArgError } = require('./errors')
@@ -31,10 +31,12 @@ const COLLECTION = 'todos'
 function _mapObjectId(query = {}) {
   try {
     const idQuery = query._id
-      ? { _id: ObjectID(query._id) }
+      ? { _id: ObjectId(query._id) }
       : {}
 
-    return { ...query, ...idQuery }
+    const map = { ...query, ...idQuery }
+
+    return map
   } catch (err) {
     throw new InvalidArgError(err.message)
   }
@@ -66,6 +68,9 @@ async function createTodo(data) {
  */
 async function deleteTodo(query) {
   const col = dbConnection.getCollection(COLLECTION)
+  const res = await col.deleteOne(_mapObjectId(query))
+  return res.result && res.result.ok === 1;
+
   /*
     TODO [Урок 4.4]: Реализуйте логику удаления записи списка дел из базы данных
 

@@ -42,12 +42,13 @@ function parseFilterValue(value) {
  * @returns {import('../model/todo').TodoEntry} - запись списка дел
  */
 function parseTodo(requestBody) {
-  const completed = requestBody.completed;
-
   const todo = {
-    title: requestBody.title || '',
-    completed: !!completed,
-    completedAt: completed ? new Date() : null,
+    ...requestBody
+  }
+
+  if (requestBody.completed !== undefined) {
+    todo.completed = !!requestBody.completed
+    todo.completedAt = requestBody.completed ? new Date() : null
   }
   /*
     TODO [Урок 4.2]: Заполните описание задачи списка дел:
@@ -155,8 +156,11 @@ router.post('/', koaBody({ multipart: true }), totalMiddleware, async (ctx, next
 
 // Удаление записи по идентификатору
 router.delete('/:id', totalMiddleware, async (ctx, next) => {
+  const params = ctx.request.params;
+
+  // const todo = parseTodo(ctx.request.body)
   const result = await deleteTodo({
-    _id: ctx.params.id
+    _id: params.id,
     /*
       TODO [Урок 5.3]: Добавьте проверку email-адреса пользователя при удалении записей из БД
     */
@@ -165,6 +169,7 @@ router.delete('/:id', totalMiddleware, async (ctx, next) => {
     throw new NotFoundError(`todo with ID ${ctx.params.id} is not found`)
   }
   ctx.body = null
+  ctx.status = 204
 })
 
 // Обновление записи с указанным идентификатором
