@@ -54,7 +54,7 @@ async function createTodo(data) {
   */
 
   const col = dbConnection.getCollection(COLLECTION)
-  const { insertedId, result } = await col.insertOne(data)
+  const { insertedId } = await col.insertOne(data)
 
   return insertedId
 }
@@ -114,6 +114,10 @@ function getTodo(query) {
  */
 async function updateTodo(query, data) {
   const col = dbConnection.getCollection(COLLECTION)
+  const res = await col.updateOne(_mapObjectId(query), { $set: { ...data } })
+
+  return res.result.ok && res.result.nModified;
+
   /*
     TODO [Урок 4.3]: Реализуйте логику обновления записи todo.
 
