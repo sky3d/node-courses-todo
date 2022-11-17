@@ -12,7 +12,7 @@ const {
 const helpers = require('../helpers')
 const app = require('../../src/server.js')
 
-describe('Урок 4.6', () => {
+describe.skip('Урок 4.6', () => {
   describe('#POST /api/v1/todos', () => {
     let collection
 
