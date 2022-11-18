@@ -69,7 +69,8 @@ async function createTodo(data) {
 async function deleteTodo(query) {
   const col = dbConnection.getCollection(COLLECTION)
   const res = await col.deleteOne(_mapObjectId(query))
-  return res.result && res.result.ok === 1;
+
+  return res.result && res.result.ok && res.result.n === 1;
 
   /*
     TODO [Урок 4.4]: Реализуйте логику удаления записи списка дел из базы данных
@@ -146,7 +147,11 @@ async function updateTodo(query, data) {
 async function createTodosFromText(filePath, email) {
   const fileContent = await fs.readFile(filePath)
   const todos = importTodoTxt(fileContent.toString())
+
   const col = dbConnection.getCollection(COLLECTION)
+  const result = await col.insertMany(todos.map(todo => ({ ...todo, email })))
+  return result.ops
+
   /*
     TODO [Урок 4.6]: Сохраните импортированные записи списка дел в базу данных.
 

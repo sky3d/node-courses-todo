@@ -5,7 +5,7 @@ const { TodoTxtItem, TodoTxt } = require('jstodotxt')
  * @param {import('./todo').TodoEntry} todo - запись todo для эспорта
  * @returns {string} - представление записи todo в формате todo.txt
  */
-function exportTodoTxt (todo) {
+function exportTodoTxt(todo) {
   const todotxt = new TodoTxtItem()
   todotxt.text = todo.title
   todotxt.complete = todo.completed
@@ -24,12 +24,13 @@ function exportTodoTxt (todo) {
  * @param {string} fileContent - содержимое todo.txt
  * @returns {Object[]} - массив записей todo
  */
-function importTodoTxt (fileContent) {
+function importTodoTxt(fileContent) {
   const todotxts = TodoTxt.parse(fileContent.trim())
   return todotxts.map(todotxt => ({
     title: todotxt.text,
     completed: todotxt.complete,
-    completedAt: todotxt.completed
+    completedAt: todotxt.completed,
+    // email: todotxt.email,
   }))
 }
 

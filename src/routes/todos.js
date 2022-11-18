@@ -73,6 +73,7 @@ router.use(apiAuth)
 router.get('/', totalMiddleware, async (ctx, next) => {
   const { contentType, completed, foo } = ctx.query
   const filter = {
+    email: ctx.state.user.email
     /*
       TODO [Урок 4.1]: Заполните значение переменной filter.
 
@@ -112,6 +113,7 @@ router.get('/:id', async (ctx, next) => {
   const params = ctx.request.params;
   const result = await getTodo({
     _id: params.id,
+    email: ctx.state.user.email,
   })
   /*
     TODO [Урок 4.1]: Реализуйте фильтр записей списка дел по идентификатору.
@@ -138,13 +140,17 @@ router.post('/', koaBody({ multipart: true }), totalMiddleware, async (ctx, next
       Используйте второй аргумент функции #createTodosFromText.
       В случае необходимости, реализуйте недостающую логику в функции #createTodosFromText
     */
-    const result = await createTodosFromText(ctx.request.files.todotxt.path)
+    const result = await createTodosFromText(ctx.request.files.todotxt.path, ctx.state.user.email)
     ctx.body = result
     ctx.status = 201
     return
   }
 
-  const todo = parseTodo(ctx.request.body)
+  const todo = {
+    ...parseTodo(ctx.request.body),
+    email: ctx.state.user.email
+  }
+
   /*
     TODO [Урок 5.3]: Добавьте email-адрес пользователя при создании записи в списке дел
     todo.email = ...
@@ -161,8 +167,11 @@ router.delete('/:id', totalMiddleware, async (ctx, next) => {
   // const todo = parseTodo(ctx.request.body)
   const result = await deleteTodo({
     _id: params.id,
+    email: ctx.state.user.email,
+
     /*
       TODO [Урок 5.3]: Добавьте проверку email-адреса пользователя при удалении записей из БД
+      
     */
   })
   if (!result) {
@@ -182,6 +191,7 @@ router.patch('/:id', koaBody(), totalMiddleware, async (ctx, next) => {
     /*
       TODO [Урок 5.3]: Добавьте проверку email-адреса пользователя при обновлении записей в БД
     */
+    email: ctx.state.user.email,
   }, {
     title: todo.title,
     /*

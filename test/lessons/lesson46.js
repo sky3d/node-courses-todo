@@ -12,7 +12,7 @@ const {
 const helpers = require('../helpers')
 const app = require('../../src/server.js')
 
-describe.skip('Урок 4.6', () => {
+describe('Урок 4.6', () => {
   describe('#POST /api/v1/todos', () => {
     let collection
 
@@ -71,7 +71,7 @@ describe.skip('Урок 4.6', () => {
     describe('#createTodosFromText', () => {
       const todoText = uuid()
       let fileName
-      async function createTodoTxt () {
+      async function createTodoTxt() {
         fileName = path.join(tmpdir(), uuid())
         await fs.writeFile(fileName, `x 2020-01-01 ${todoText}\n`)
       }

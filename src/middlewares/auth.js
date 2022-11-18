@@ -6,7 +6,7 @@ const { AuthenticationError } = require('../model/errors')
  * @param {*} ctx - контекст выполнения запроса
  * @param {*} next - следующий в цепочке middleware
  */
-async function apiAuth (ctx, next) {
+async function apiAuth(ctx, next) {
   auth.assertAuthenticated(ctx)
   await next()
 }
@@ -16,10 +16,14 @@ async function apiAuth (ctx, next) {
  * @param {*} ctx - контекст выполнения запроса
  * @param {*} next - следующий в цепочке middleware
  */
-async function viewAuth (ctx, next) {
+async function viewAuth(ctx, next) {
   try {
     auth.assertAuthenticated(ctx)
   } catch (err) {
+    if (err instanceof AuthenticationError) {
+      ctx.redirect('/login');
+      return;
+    }
     /*
       TODO [Урок 5.2]: Переадресуйте пользователя, не прошедших аутентификацию, на страницу /login
 

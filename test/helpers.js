@@ -11,20 +11,20 @@ const { importTodoTxt } = require('../src/model/todotxt')
 const TODO_COLLECTION = 'todos'
 const testUser = { email: uuid() }
 
-function sum () {
+function sum() {
   return [].reduce.call(arguments, (sum, number) => {
     return sum + number
   })
 }
 
-async function createTodo (todo) {
+async function createTodo(todo) {
   const collection = await db.getCollection(TODO_COLLECTION)
   const { insertedId } = await collection.insertOne(todo || { foo: uuid() })
 
-  return collection.findOne({ _id: insertedId })
+  return collection.findOne({ _id: insertedId, email: todo.email })
 }
 
-async function createTodoTxt () {
+async function createTodoTxt() {
   const filePath = path.join(tmpdir(), uuid())
   const str = `x 2020-01-01 ${uuid()}\n`
   const [todo] = importTodoTxt(str)
@@ -32,17 +32,17 @@ async function createTodoTxt () {
   return { filePath, todo }
 }
 
-async function getTodo (id) {
+async function getTodo(id) {
   const collection = await db.getCollection(TODO_COLLECTION)
   return collection.findOne({ _id: ObjectID(id) })
 }
 
-async function dropDb () {
+async function dropDb() {
   const collection = await db.getCollection(TODO_COLLECTION)
   await collection.deleteMany()
 }
 
-function stubTestUser () {
+function stubTestUser() {
   sinon.stub(auth, 'assertAuthenticated').callsFake(ctx => {
     ctx.state.user = testUser
   })
